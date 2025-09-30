@@ -127,11 +127,7 @@ const Header = () => {
           className="header-logo"
           onClick={closeNav}
         >
-          <img
-            src="../public/cookie_x192.png"
-            alt="icon"
-            className="logo-icon"
-          />
+          <img src="/cookie_x192.png" alt="icon" className="logo-icon" />
           <span>BiteCount</span>
         </Link>
 
@@ -208,7 +204,7 @@ const Header = () => {
           {user ? (
             <div className="profile-dropdown">
               <img
-                src="../public/profile-icon.png"
+                src="/profile-icon.png"
                 alt="Profile"
                 className="profile-icon"
               />
