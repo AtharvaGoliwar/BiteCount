@@ -1,0 +1,159 @@
+/* src/components/ProgressCalendar.css */
+
+.calendar-container {
+    /* Padding is inherited from the global .card style */
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+}
+
+/* IMPROVEMENT: Styles for the new <button> element used for month selection */
+.current-month {
+    flex-grow: 1;
+    text-align: center;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    border-radius: var(--border-radius-md);
+    transition: background-color 0.2s ease;
+    /* Reset button styles */
+    background: none;
+    border: none;
+    font-family: inherit;
+    color: inherit;
+}
+
+.current-month:hover {
+    background-color: var(--background-color);
+}
+
+.picker-icon {
+    font-size: var(--font-size-base);
+    opacity: 0.7;
+}
+
+/* IMPROVEMENT: Dedicated style for prev/next month navigation buttons */
+.calendar-nav-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background-color: transparent;
+    color: var(--text-color-light);
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.calendar-nav-btn:hover {
+    background-color: var(--background-color);
+    color: var(--primary-color);
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: var(--spacing-sm);
+    text-align: center;
+}
+
+.day-of-week {
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-sm);
+    color: var(--text-color-muted);
+    padding-bottom: var(--spacing-sm);
+}
+
+/* Styles for the day <button> elements */
+.calendar-day {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    max-width: 40px;
+    margin: auto;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    font-size: var(--font-size-sm);
+    position: relative;
+    /* Reset button styles */
+    border: none;
+    background-color: transparent;
+    padding: 0;
+    font-family: inherit;
+}
+
+.calendar-day.empty {
+    cursor: default;
+}
+
+.calendar-day:not(.empty):hover {
+    background-color: #e9f5ff;
+}
+
+/* For keyboard navigation */
+.calendar-day:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+.calendar-day.today span {
+    font-weight: var(--font-weight-bold);
+    color: var(--primary-color);
+}
+
+.calendar-day.selected {
+    background-color: var(--primary-color);
+    color: var(--surface-color);
+    font-weight: var(--font-weight-bold);
+}
+.calendar-day.selected:hover {
+    background-color: var(--primary-color-dark);
+}
+.calendar-day.selected span {
+    color: var(--surface-color); /* Ensure text is white */
+}
+
+.calendar-day.success::before,
+.calendar-day.failure::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+    border: 2px solid;
+    border-radius: 50%;
+}
+
+.calendar-day.success::before {
+    border-color: var(--success-color);
+}
+
+.calendar-day.failure::before {
+    border-color: var(--danger-color);
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 400px) {
+    .calendar-grid {
+        gap: var(--spacing-xs);
+    }
+    .current-month {
+        font-size: var(--font-size-base);
+    }
+}

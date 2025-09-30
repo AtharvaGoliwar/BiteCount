@@ -1,0 +1,185 @@
+/* src/App.css */
+
+/* ==========================================================================
+   1. Design System (CSS Custom Properties)
+   ========================================================================== */
+:root {
+  /* Colors */
+  --primary-color: #3498db;
+  --primary-color-dark: #2980b9;
+  --secondary-color: #6c757d;
+  --success-color: #28a745;
+  --danger-color: #e74c3c;
+  --warning-color: #f39c12;
+
+  --text-color: #333;
+  --text-color-light: #555;
+  --text-color-muted: #888;
+  --background-color: #f4f7f9;
+  --surface-color: #ffffff; /* For cards, modals, etc. */
+  --border-color: #e7e7e7;
+
+  /* Typography */
+  --font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-size-base: 1rem; /* 16px */
+  --font-size-sm: 0.875rem;
+  --font-size-lg: 1.25rem;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 600;
+
+  /* Spacing */
+  --spacing-xs: 0.25rem; /* 4px */
+  --spacing-sm: 0.5rem;  /* 8px */
+  --spacing-md: 1rem;    /* 16px */
+  --spacing-lg: 1.5rem;  /* 24px */
+  --spacing-xl: 2rem;    /* 32px */
+
+  /* Borders & Shadows */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --box-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --box-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --box-shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.12);
+
+  /* Transitions */
+  --transition-fast: all 0.2s ease-in-out;
+  --transition-base: all 0.3s ease;
+}
+
+/* ==========================================================================
+   2. Global Resets and Base Styles
+   ========================================================================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding-top: 65px; /* Space for the sticky header */
+  font-family: var(--font-family-base);
+  background-color: var(--background-color);
+  color: var(--text-color);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ==========================================================================
+   3. Main Layout Container
+   ========================================================================== */
+.container {
+  width: 100%;
+  max-width: 1200px; /* Wider container for desktop */
+  margin: 0 auto;
+  padding: var(--spacing-md) var(--spacing-lg);
+}
+
+/* ==========================================================================
+   4. Reusable Components
+   ========================================================================== */
+
+/* Cards */
+.card {
+  background-color: var(--surface-color);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  box-shadow: var(--box-shadow-md);
+  border: 1px solid var(--border-color);
+}
+
+.card h2, .card h3 {
+  margin-top: 0;
+  color: var(--primary-color);
+}
+
+/* Forms */
+.form-group {
+  margin-bottom: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  margin-bottom: var(--spacing-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-color-light);
+  font-size: var(--font-size-sm);
+}
+
+.form-control {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ccc;
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-base);
+  transition: var(--transition-base);
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+/* Buttons */
+.btn {
+  display: inline-block;
+  width: 100%;
+  padding: 12px 20px;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  text-align: center;
+  text-decoration: none;
+  color: var(--surface-color);
+  background: linear-gradient(90deg, var(--primary-color), var(--primary-color-dark));
+  border: none;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+}
+
+/* For keyboard navigation */
+.btn:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+.btn-secondary {
+  background: var(--secondary-color);
+}
+
+/* Notifications */
+.notification {
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  margin-bottom: var(--spacing-lg);
+  text-align: center;
+  border: 1px solid transparent;
+}
+
+.notification.success {
+  background-color: #d4edda;
+  color: #155724;
+  border-color: #c3e6cb;
+}
+
+.notification.warning {
+  background-color: #fff3cd;
+  color: #856404;
+  border-color: #ffeeba;
+}
+
+.notification.error {
+    background-color: #fdd;
+    color: var(--danger-color);
+    border-color: #fcc;
+}

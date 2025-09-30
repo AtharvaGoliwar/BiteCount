@@ -1,0 +1,103 @@
+.calendar-container {
+    padding: 15px;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.current-month {
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.picker-icon {
+    font-size: 16px;
+    opacity: 0.7;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    text-align: center;
+}
+
+.day-of-week {
+    font-weight: bold;
+    font-size: 12px;
+    color: #888;
+    padding-bottom: 5px;
+}
+
+.calendar-day {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 36px;
+    width: 36px;
+    margin: auto;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
+    font-size: 14px;
+    position: relative;
+}
+
+.calendar-day.empty {
+    cursor: default;
+}
+
+.calendar-day:not(.empty):hover {
+    background-color: #e9f5ff;
+}
+
+.calendar-day.today span {
+    font-weight: bold;
+    color: #007bff;
+}
+
+/* Highlight for selected day */
+.calendar-day.selected {
+    background-color: #0056b3;;
+    color: #fff;
+    font-weight: bold;
+}
+.calendar-day.selected:hover {
+    background-color: #0056b3;
+}
+
+/* Highlight for successful day */
+.calendar-day.success::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+    border: 2px solid #28a745; /* Green */
+    border-radius: 50%;
+    box-sizing: border-box;
+    color: black;
+    /* background-color: #28a745; */
+}
+
+/* Highlight for failure day */
+.calendar-day.failure::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+    border: 2px solid #dc3545; /* Red */
+    border-radius: 50%;
+    box-sizing: border-box;
+}

@@ -1,0 +1,63 @@
+/* src/pages/Auth.css */
+
+/*
+  NOTE: The main container styling (width, margin, shadow, padding) is now
+  handled by wrapping the form in a `.card` inside a `.container`.
+  This promotes reusability.
+
+  Example JSX structure:
+  <div className="container" style={{ maxWidth: '450px' }}>
+    <div className="card">
+      <h2>Login</h2>
+      <form className="auth-form">...</form>
+    </div>
+  </div>
+*/
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.auth-form h2 {
+    text-align: center;
+    margin-bottom: var(--spacing-md);
+    color: var(--text-color);
+}
+
+/* The .auth-btn class can be replaced with the global .btn class */
+/*
+.auth-btn {
+  margin-top: var(--spacing-sm);
+}
+*/
+
+.switch-auth-link {
+  text-align: center;
+  margin-top: var(--spacing-lg);
+  color: var(--text-color-muted);
+}
+
+.switch-auth-link a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: var(--font-weight-bold);
+}
+
+.switch-auth-link a:hover {
+  text-decoration: underline;
+}
+
+/* Profile specific styles */
+.profile-section {
+    margin-bottom: var(--spacing-xl);
+}
+
+.profile-section h3 {
+    border-bottom: 2px solid var(--background-color);
+    padding-bottom: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+    color: var(--primary-color);
+    font-weight: var(--font-weight-bold);
+}

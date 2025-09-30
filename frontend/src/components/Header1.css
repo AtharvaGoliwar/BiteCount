@@ -1,0 +1,234 @@
+/* src/components/Header.css */
+
+/* ==========================================================================
+   Mobile First Header Styles (Default: Sidebar and Hamburger)
+   ========================================================================== */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 var(--spacing-md);
+  height: 65px;
+  background-color: var(--surface-color);
+  box-shadow: var(--box-shadow-sm);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.header-logo {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-lg);
+  color: var(--primary-color);
+  text-decoration: none;
+  z-index: 1001; /* Ensure logo is above sidebar overlay */
+}
+
+/* --- The Main Nav (acts as the hidden sidebar on mobile) --- */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 280px;
+  height: 100vh;
+  background-color: var(--surface-color);
+  box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+  padding-top: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease-in-out;
+  z-index: 999;
+}
+
+.nav-link {
+  color: var(--text-color-light);
+  text-decoration: none;
+  font-weight: var(--font-weight-medium);
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: 1.1rem;
+  width: 100%;
+  text-align: left;
+  position: relative;
+  transition: var(--transition-fast);
+}
+
+.nav-link:hover {
+  color: var(--primary-color);
+  background-color: var(--background-color);
+}
+
+/* Mobile-only auth/profile section at the bottom of the sidebar */
+.auth-links-mobile { 
+  margin-top: auto; /* Push to bottom */
+  padding: var(--spacing-lg);
+  width: 100%;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+.auth-links-mobile .logout-button {
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--text-color-light);
+  cursor: pointer;
+}
+
+/* Hide desktop-only elements on mobile */
+.auth-links-desktop, .profile-dropdown {
+  display: none;
+}
+
+/* --- Hamburger Menu & Overlay --- */
+.nav-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); z-index: 998;
+  opacity: 0; visibility: hidden; transition: all 0.3s ease-in-out;
+}
+
+.menu-toggle {
+  display: flex; flex-direction: column; justify-content: space-around;
+  width: 30px; height: 30px; background: transparent; border: none;
+  cursor: pointer; padding: 0; z-index: 1001;
+}
+.menu-toggle .bar {
+  display: block; width: 25px; height: 3px; background-color: var(--text-color);
+  border-radius: 2px; transition: all 0.3s ease-in-out;
+}
+
+/* --- Logo Styling with Icon --- */
+.header-logo {
+  /* This is the key part: use flexbox to align items in a row */
+  display: flex;
+  align-items: center; /* This vertically centers the icon and text */
+  gap: var(--spacing-sm, 8px); /* Adds a small space between the icon and text */
+  
+  /* Existing styles should remain */
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-lg);
+  color: var(--primary-color);
+  text-decoration: none;
+  z-index: 1001;
+}
+
+.logo-icon {
+  height: 32px; /* Adjust the size of your icon as needed */
+  width: 32px;
+}
+
+
+/* --- (Optional) Fun Hover Effect --- */
+.header-logo:hover .logo-icon {
+  transform: rotate(-15deg);
+  transition: transform 0.3s ease;
+}
+
+/* --- Active Sidebar State --- */
+.header.nav-open .nav { transform: translateX(0); }
+.header.nav-open .nav-overlay { opacity: 1; visibility: visible; }
+.header.nav-open .menu-toggle .bar:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+.header.nav-open .menu-toggle .bar:nth-child(2) { opacity: 0; }
+.header.nav-open .menu-toggle .bar:nth-child(3) { transform: rotate(-45deg) translate(7px, -6px); }
+
+
+/* ==========================================================================
+   Desktop Styles (Tablet and up)
+   ========================================================================== */
+@media (min-width: 768px) {
+  /* --- Hide mobile elements --- */
+  .menu-toggle, .nav-overlay, .auth-links-mobile {
+    display: none;
+  }
+  
+  /* --- Re-style the nav to be a horizontal bar --- */
+  .nav {
+    position: static;
+    flex-direction: row;
+    align-items: center;
+    height: 100%;
+    width: auto;
+    background-color: transparent;
+    box-shadow: none;
+    padding-top: 0;
+    transform: translateX(0);
+    transition: none;
+    gap: var(--spacing-sm); /* Spacing between nav items */
+  }
+
+  .nav-link {
+    font-size: var(--font-size-base);
+    padding: 0 var(--spacing-md);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    width: auto;
+  }
+  .nav-link:hover { background-color: transparent; color: var(--primary-color); }
+  .nav-link.active { color: var(--primary-color); font-weight: var(--font-weight-bold); }
+  .nav-link::after {
+    content: ''; position: absolute; bottom: 0; left: 0;
+    width: 100%; height: 3px; background-color: var(--primary-color);
+    transform: scaleX(0); transition: transform 0.3s ease;
+  }
+  .nav-link.active::after { transform: scaleX(1); }
+
+  /* --- Show and style desktop elements --- */
+  .auth-links-desktop, .profile-dropdown {
+    display: flex; /* CRITICAL: This makes them visible on desktop */
+  }
+  .auth-links-desktop { gap: 0.5rem; }
+
+  /* --- Profile Dropdown Fix --- */
+  .profile-dropdown { position: relative; display: flex; align-items: center; }
+  .profile-icon {
+    width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
+    border: 2px solid transparent; transition: border-color 0.2s;
+    object-fit: cover;
+  }
+  .profile-dropdown:hover .profile-icon { border-color: var(--primary-color); }
+
+  .dropdown-content {
+    display: none; /* CRITICAL: Hide dropdown by default */
+    position: absolute;
+    top: 120%;
+    right: 0;
+    background-color: var(--surface-color);
+    min-width: 160px;
+    box-shadow: var(--box-shadow-lg);
+    z-index: 100;
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    padding: var(--spacing-sm) 0;
+  }
+  /* CRITICAL: Show dropdown on hover */
+  .profile-dropdown:hover .dropdown-content {
+    display: block;
+  }
+
+  .dropdown-content a,
+  .dropdown-content .logout-button {
+    color: var(--text-color);
+    padding: 10px 20px;
+    text-decoration: none;
+    display: block;
+    width: 100%;
+    text-align: left;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: var(--font-size-base);
+    transition: var(--transition-fast);
+  }
+  .dropdown-content a:hover,
+  .dropdown-content .logout-button:hover {
+    background-color: var(--background-color);
+    color: var(--primary-color);
+  }
+}
