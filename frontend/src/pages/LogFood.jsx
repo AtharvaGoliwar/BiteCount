@@ -251,6 +251,7 @@ const LogFood = () => {
   // The JSX part of the component remains the same
   return (
     <div>
+      {loading && <Loader />}
       {isModalOpen && selectedFood && (
         <LogModal
           food={selectedFood}
