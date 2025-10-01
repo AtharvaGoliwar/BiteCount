@@ -67,9 +67,9 @@ const Profile = () => {
           target_weight_kg: Number(formData.target_weight_kg),
           daily_calorie_goal: Number(formData.daily_calorie_goal),
           macro_goals: {
-            protein: Number(formData.proteinGoal),
-            carbs: Number(formData.carbsGoal),
-            fat: Number(formData.fatGoal),
+            protein: proteinGoal ? Number(formData.proteinGoal) : null,
+            carbs: carbsGoal ? Number(formData.carbsGoal) : null,
+            fat: fatGoal ? Number(formData.fatGoal) : null,
           },
         },
       };
@@ -165,7 +165,7 @@ const Profile = () => {
               <label htmlFor="proteinGoal">Protein (g)</label>
               <input
                 type="number"
-                id="proteinGoal"
+                name="proteinGoal"
                 className="form-control"
                 placeholder="e.g., 150"
                 value={formData.proteinGoal}
@@ -176,7 +176,7 @@ const Profile = () => {
               <label htmlFor="carbsGoal">Carbs (g)</label>
               <input
                 type="number"
-                id="carbsGoal"
+                name="carbsGoal"
                 className="form-control"
                 placeholder="e.g., 200"
                 value={formData.carbsGoal}
@@ -187,7 +187,7 @@ const Profile = () => {
               <label htmlFor="fatGoal">Fat (g)</label>
               <input
                 type="number"
-                id="fatGoal"
+                name="fatGoal"
                 className="form-control"
                 placeholder="e.g., 65"
                 value={formData.fatGoal}
