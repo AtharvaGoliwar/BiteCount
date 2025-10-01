@@ -5,7 +5,6 @@ import { toast } from "react-toastify";
 import DatePickerModal from "./DatePickerModal";
 import apiFetch from "../apiService";
 import "./ProgressCalendar.css"; // We'll use the improved CSS file
-import Loader from "./Loader";
 
 // FIX 1: Correctly format date to 'YYYY-MM-DD' using local timezone parts.
 const formatDate = (date) => {
@@ -21,7 +20,6 @@ const ProgressCalendar = ({ selectedDate, onDateChange }) => {
   );
   const [monthSummary, setMonthSummary] = useState({});
   const [isPickerOpen, setIsPickerOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   const today = useMemo(() => formatDate(new Date()), []);
   const daysOfWeek = ["S", "M", "T", "W", "T", "F", "S"]; // Shorter for small screens
@@ -40,14 +38,11 @@ const ProgressCalendar = ({ selectedDate, onDateChange }) => {
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
     try {
-      setLoading(true);
       const data = await apiFetch(`/month-summary/${year}/${month}`);
       setMonthSummary(data);
     } catch (error) {
       console.error("Failed to fetch month summary:", error);
       toast.error("Could not load calendar summary.");
-    } finally {
-      setLoading(false);
     }
   }, []);
 
@@ -109,7 +104,6 @@ const ProgressCalendar = ({ selectedDate, onDateChange }) => {
 
   return (
     <div className="calendar-container card">
-      {loading && <Loader />}
       {isPickerOpen && (
         <DatePickerModal
           currentDate={currentMonthDate}

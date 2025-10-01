@@ -179,15 +179,13 @@ const LogFood = () => {
   useEffect(() => {
     const fetchAllFoods = async () => {
       try {
-        setLoading(true);
+        // setLoading(true);
         // STEP 3: Use apiFetch with the correct "/api" endpoint
         const data = await apiFetch("/foods?q=");
         setAllFoods(data);
       } catch (error) {
         console.error("Failed to fetch food list:", error);
         toast.error("Could not load your food database.");
-      } finally {
-        setLoading(false);
       }
     };
     fetchAllFoods();

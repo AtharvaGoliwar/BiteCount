@@ -16,7 +16,7 @@ const Dashboard = () => {
 
   const fetchSummary = useCallback(async (date) => {
     try {
-      setLoading(true);
+      // setLoading(true);
       // STEP 3: Use apiFetch and the correct endpoint with "/api"
       const data = await apiFetch(`/summary/${date}`);
       setSummary(data);
@@ -26,8 +26,6 @@ const Dashboard = () => {
       toast.error(`Could not load dashboard data: ${err.message}`);
       // Set a default state on error to prevent crashing
       setSummary({ total_calories: 0, calories_burned: 0, logged_foods: [] });
-    } finally {
-      setLoading(false);
     }
   }, []); // The apiUrl dependency is gone
 
