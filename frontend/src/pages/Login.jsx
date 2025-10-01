@@ -22,6 +22,16 @@ const Login = () => {
 
   return (
     <div className="auth-container">
+      <h1
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <img src="/cookie_x192.png" alt="icon" className="logo-icon" />
+        <span style={{ color: "#3498db" }}>BiteCount</span>
+      </h1>
       <h2>Login</h2>
       {error && <p className="error-message">{error}</p>}
       <form onSubmit={handleSubmit} className="auth-form">
