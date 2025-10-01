@@ -57,7 +57,7 @@ export default defineConfig({
 
         // This is the most important color. It tints the UI of the browser and OS (e.g., address bar, task switcher).
         // We're using the deep indigo from the icon's outline for a modern, high-contrast look.
-        theme_color: '#4A3F6B', 
+        theme_color: '#FFFFFF', 
         
         // This is the background color of the splash screen shown when the app launches.
         // We're using a warm, off-white color that complements the cookie theme.
