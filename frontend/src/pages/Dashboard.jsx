@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import ProgressCalendar from "../components/ProgressCalendar";
 import { toast } from "react-toastify";
 import apiFetch from "../apiService"; // <-- STEP 1: Import your API helper
+import Loader from "../components/Loader"; // <-- Import the Loader component
 
 // STEP 2: Remove the apiUrl prop. It's no longer needed.
 const Dashboard = () => {
@@ -10,12 +11,12 @@ const Dashboard = () => {
     new Date().toISOString().split("T")[0]
   );
   const [summary, setSummary] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [caloriesBurnedInput, setCaloriesBurnedInput] = useState("");
 
   const fetchSummary = useCallback(async (date) => {
-    setLoading(true);
     try {
+      setLoading(true);
       // STEP 3: Use apiFetch and the correct endpoint with "/api"
       const data = await apiFetch(`/summary/${date}`);
       setSummary(data);
@@ -43,6 +44,7 @@ const Dashboard = () => {
 
     try {
       // STEP 4: Use apiFetch for the POST request
+      setLoading(true);
       await toast.promise(
         apiFetch("/log/activity", "POST", {
           calories_burned: calories,
@@ -59,13 +61,15 @@ const Dashboard = () => {
     } catch (err) {
       // The toast.promise will handle showing the error toast
       console.error("Failed to save activity:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
   // A better loading state check
-  if (loading) {
-    return <p>Loading dashboard...</p>;
-  }
+  // if (loading) {
+  //   return <p>Loading dashboard...</p>;
+  // }
 
   // Handle the case where the summary couldn't be fetched
   if (!summary) {
@@ -76,6 +80,7 @@ const Dashboard = () => {
 
   return (
     <div>
+      {loading && <Loader />}
       {/* STEP 5: Remove the apiUrl prop from ProgressCalendar too */}
       <ProgressCalendar
         selectedDate={selectedDate}

@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import apiFetch from "../apiService"; // <-- STEP 1: Import the API helper
+import Loader from "../components/Loader";
 
 // STEP 2: Remove the apiUrl prop
 const LogWeight = () => {
   const [weight, setWeight] = useState("");
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,6 +19,7 @@ const LogWeight = () => {
 
     try {
       // STEP 3: Use apiFetch with the correct endpoint and method
+      setLoading(true);
       await apiFetch("/log/weight", "POST", {
         weight: parseFloat(weight),
       });
@@ -26,12 +29,15 @@ const LogWeight = () => {
     } catch (error) {
       console.error("Failed to log weight:", error);
       toast.error(`Could not log weight: ${error.message}`);
+    } finally {
+      setLoading(false);
     }
   };
 
   // The JSX for the form remains exactly the same
   return (
     <div>
+      {loading && <Loader />}
       <h1 className="page-title">Log Your Weight</h1>
       <div className="card">
         <form onSubmit={handleSubmit}>

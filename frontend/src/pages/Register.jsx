@@ -3,6 +3,7 @@ import { useAuth } from "../AuthContext";
 import { Link } from "react-router-dom";
 // import "./Auth.css"; // Import the new CSS
 import "./Auth1.css"; // Import the new CSS
+import Loader from "../components/Loader";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -10,19 +11,24 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const { register } = useAuth();
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     try {
+      setLoading(true);
       await register(name, email, password);
     } catch (err) {
       setError("Failed to register. Email may already be in use.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="auth-container">
+      {loading && <Loader />}
       <h1
         style={{
           display: "flex",

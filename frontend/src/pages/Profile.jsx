@@ -3,9 +3,11 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../AuthContext";
 import apiFetch from "../apiService"; // <-- IMPORT THE NEW HELPER
 import "./Auth.css"; // Import the new CSS
+import Loader from "../components/Loader";
 
 const Profile = () => {
   const { user, setUser } = useAuth();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     height_cm: "",
@@ -54,6 +56,7 @@ const Profile = () => {
           daily_calories_goal: Number(formData.daily_calories_goal),
         },
       };
+      setLoading(true);
       await apiFetch("/profile", "PUT", payload); // <-- USE apiFetch
 
       // Update user context locally
@@ -61,6 +64,8 @@ const Profile = () => {
       setMessage("Profile updated successfully!");
     } catch (error) {
       setMessage(`Failed to update profile: ${error.message}`);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -68,11 +73,14 @@ const Profile = () => {
     e.preventDefault();
     setMessage("");
     try {
+      setLoading(true);
       await apiFetch("/change-password", "POST", passwordData); // <-- USE apiFetch
       setMessage("Password changed successfully!");
       setPasswordData({ old_password: "", new_password: "" });
     } catch (error) {
       setMessage(`Failed to change password: ${error.message}`);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -83,6 +91,7 @@ const Profile = () => {
   // ... (The JSX part of the component remains exactly the same) ...
   return (
     <div className="auth-container">
+      {loading && <Loader />}
       <h2>Your Profile</h2>
       {message && <p className="profile-message">{message}</p>}
 

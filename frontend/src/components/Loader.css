@@ -1,0 +1,36 @@
+/* Defines the animation "pulse" */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1); /* Gently enlarges the icon */
+    opacity: 0.85;       /* Slightly fades it for a softer feel */
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; /* Ensure it's on top of everything */
+  backdrop-filter: blur(4px); /* Modern blur effect for browsers that support it */
+}
+
+.loader-icon {
+  width: 80px; /* Adjust size as needed */
+  height: 80px;
+  /* Applies the 'pulse' animation, making it run for 1.5s, with an ease-in-out curve, and looping forever */
+  animation: pulse 1.5s ease-in-out infinite;
+}

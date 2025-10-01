@@ -12,6 +12,7 @@ import {
 } from "chart.js";
 import apiFetch from "../apiService"; // <-- STEP 1: Import the API helper
 import { toast } from "react-toastify"; // <-- Import toast for error handling
+import Loader from "../components/Loader"; // <-- Import the Loader component
 
 // Chart.js registration remains the same
 ChartJS.register(
@@ -35,6 +36,7 @@ const Progress = () => {
     // STEP 3: Consolidate all data fetching into one function
     const fetchProgressData = async () => {
       try {
+        setLoading(true);
         // Use Promise.all to run all requests in parallel for faster loading
         const [weightRes, calorieRes, checkRes] = await Promise.all([
           apiFetch("/progress/weight"),
@@ -89,13 +91,14 @@ const Progress = () => {
     fetchProgressData();
   }, []); // STEP 4: Use an empty dependency array to run only once
 
-  if (loading) {
-    return <p style={{ textAlign: "center" }}>Loading your progress...</p>;
-  }
+  // if (loading) {
+  //   return <p style={{ textAlign: "center" }}>Loading your progress...</p>;
+  // }
 
   // The JSX part of the component remains the same
   return (
     <div>
+      {loading && <Loader />}
       <h1 className="page-title">Your Progress</h1>
 
       {progressCheck && (

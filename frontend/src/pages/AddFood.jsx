@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import apiFetch from "../apiService";
+import Loader from "../components/Loader";
 
 const AddFood = () => {
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     serving_size: "",
@@ -45,18 +47,22 @@ const AddFood = () => {
     };
 
     try {
+      setLoading(true);
       await apiFetch("/foods", "POST", payload);
       toast.success("Food added successfully!");
       navigate("/log-food");
     } catch (error) {
       console.error("Error adding food:", error);
       toast.error(`Could not add food: ${error.message}`);
+    } finally {
+      setLoading(false);
     }
   };
 
   // The JSX for the form remains exactly the same.
   return (
     <div>
+      {loading && <Loader />}
       <h1 className="page-title">Add New Food</h1>
       <div className="card">
         <form onSubmit={handleSubmit}>

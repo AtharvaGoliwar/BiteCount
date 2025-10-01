@@ -162,21 +162,24 @@ import LogModal from "../components/LogModal";
 import "../components/Modal.css";
 import { toast } from "react-toastify";
 import apiFetch from "../apiService"; // <-- STEP 1: Import the API helper
+import Loader from "../components/Loader";
 
 // STEP 2: Remove the apiUrl prop
 const LogFood = () => {
   const [query, setQuery] = useState("");
   const [allFoods, setAllFoods] = useState([]);
   const [filteredResults, setFilteredResults] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFood, setSelectedFood] = useState(null);
+  // const [loading,setLoading] = useState(false);
 
   useEffect(() => {
     const fetchAllFoods = async () => {
       try {
+        setLoading(true);
         // STEP 3: Use apiFetch with the correct "/api" endpoint
         const data = await apiFetch("/foods?q=");
         setAllFoods(data);
@@ -217,6 +220,7 @@ const LogFood = () => {
 
     try {
       // STEP 5: Use apiFetch within toast.promise for a better UX
+      setLoading(true);
       await toast.promise(
         apiFetch("/log/food", "POST", {
           food_id: food._id.$oid,
@@ -235,6 +239,8 @@ const LogFood = () => {
       // The toast.promise automatically shows the error toast.
       // We can just log the error here for debugging.
       console.error("Logging error:", err);
+    } finally {
+      setLoading(false);
     }
   };
 

@@ -3,25 +3,31 @@ import { useAuth } from "../AuthContext";
 import { Link } from "react-router-dom";
 // import "./Auth.css"; // Import the new CSS
 import "./Auth1.css"; // Import the new CSS
+import Loader from "../components/Loader";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const { login } = useAuth();
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     try {
+      setLoading(true);
       await login(email, password);
     } catch (err) {
       setError("Failed to log in. Please check your credentials.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="auth-container">
+      {loading && <Loader />}
       <h1
         style={{
           display: "flex",
