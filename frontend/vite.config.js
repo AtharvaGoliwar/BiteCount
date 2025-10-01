@@ -68,8 +68,33 @@ export default defineConfig({
         start_url: '/',
         icons: [
           {
+            src: 'cookie_x48.png', // Renamed for clarity
+            sizes: '48x48',
+            type: 'image/png',
+          },
+          {
+            src: 'cookie_x72.png', // Renamed for clarity
+            sizes: '72x72',
+            type: 'image/png',
+          },
+          {
+            src: 'cookie_x96.png', // Renamed for clarity
+            sizes: '96x96',
+            type: 'image/png',
+          },
+          {
+            src: 'cookie_x128.png', // Renamed for clarity
+            sizes: '128x128',
+            type: 'image/png',
+          },
+          {
             src: 'cookie_x192.png', // Renamed for clarity
             sizes: '192x192',
+            type: 'image/png',
+          },
+          {
+            src: 'cookie_x384.png', // Renamed for clarity
+            sizes: '384x384',
             type: 'image/png',
           },
           {
@@ -84,7 +109,7 @@ export default defineConfig({
             src: 'cookie_x512.png',
             sizes: '512x512',
             type: 'image/png',
-            purpose: 'maskable',
+            // purpose: 'maskable', // Uncomment if you create a maskable version of your icon
           },
         ],
       },
