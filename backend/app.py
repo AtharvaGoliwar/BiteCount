@@ -69,6 +69,13 @@ def register():
     email = data.get('email')
     password = data.get('password')
 
+    # --- NEW: Get optional goal data from the request ---
+    calorie_goal = data.get('calorieGoal')
+    protein_goal = data.get('proteinGoal')
+    carbs_goal = data.get('carbsGoal')
+    fat_goal = data.get('fatGoal')
+    current_weight = data.get('weight')
+
     if not name or not email or not password:
         return jsonify({'message': 'Missing fields'}), 400
 
@@ -82,11 +89,16 @@ def register():
         'name': name,
         'email': email,
         'password_hash': hashed_password,
+        'current_weight': float(current_weight) if current_weight else None,
+        'macro_goals': {
+            'protein': float(protein_goal) if protein_goal else None,
+            'carbs': float(carbs_goal) if carbs_goal else None,
+            'fat': float(fat_goal) if fat_goal else None,},
         'profile': {
             'height_cm': 0,
             'weight_kg': 0,
             'target_weight_kg': 0,
-            'daily_calories_goal': 2000 # Default value
+            'daily_calorie_goal': float(calorie_goal) if calorie_goal else 2000,
         }
     }).inserted_id
 
@@ -122,7 +134,9 @@ def get_profile(current_user):
     user_data = {
         'name': current_user['name'],
         'email': current_user['email'],
-        'profile': current_user.get('profile', {})
+        'profile': current_user.get('profile', {}),
+        'macro_goals': current_user.get('macro_goals', {}),
+        'current_weight': current_user.get('current_weight')
     }
     return jsonify(user_data)
 
@@ -130,7 +144,7 @@ def get_profile(current_user):
 @token_required
 def update_profile(current_user):
     data = request.get_json()
-    
+    macro_goals = data.get('profile',{}).get('macro_goals',0) 
     # Fields that can be updated
     update_data = {
         'name': data.get('name', current_user['name']),
@@ -140,10 +154,21 @@ def update_profile(current_user):
         'profile.daily_calories_goal': data.get('profile', {}).get('daily_calories_goal', current_user['profile']['daily_calories_goal'])
     }
     
+    if macro_goals is not None:
+        # Update nested macro_goals object fields individually to prevent overwriting
+        if 'protein' in macro_goals:
+            update_data['macro_goals.protein'] = float(macro_goals['protein']) if macro_goals['protein'] else None
+        if 'carbs' in macro_goals:
+            update_data['macro_goals.carbs'] = float(macro_goals['carbs']) if macro_goals['carbs'] else None
+        if 'fat' in macro_goals:
+            update_data['macro_goals.fat'] = float(macro_goals['fat']) if macro_goals['fat'] else None
+
+    
     users_collection.update_one(
         {'_id': current_user['_id']},
         {'$set': update_data}
     )
+    print(update_data)
 
     return jsonify({'message': 'Profile updated successfully!'})
 
@@ -237,6 +262,10 @@ def log_weight_entry(current_user): # MODIFIED: Get the current user
         {"$set": {"user_id": current_user['_id'], "weight": weight, "date": log_date_str}},
         upsert=True
     )
+    db.users.update_one(
+        {"_id": current_user['_id']},
+        {"$set": {"current_weight": weight}}
+    )
     return jsonify({"message": "Weight logged successfully"}), 201
 
 @app.route('/api/log/activity', methods=['POST'])
@@ -257,27 +286,55 @@ def log_activity(current_user): # MODIFIED: Get the current user
 
 # 3. Progress and Summary
 @app.route('/api/summary/<date_str>', methods=['GET'])
-@token_required # MODIFIED: Protect this route
-def get_daily_summary(current_user, date_str): # MODIFIED: Get the current user
-    # MODIFIED: Filter food logs by user_id
-    logs = db.daily_logs.find({"user_id": current_user['_id'], "date": date_str})
-    
-    total_calories = 0
-    logged_foods = []
-    for log in logs:
-        total_calories += log['total_calories']
-        logged_foods.append(parse_json(log))
+@token_required
+def get_daily_summary(current_user, date_str):
+    try:
+        # --- 1. Fetch and process food logs for the day ---
+        logs = db.daily_logs.find({"user_id": current_user['_id'], "date": date_str})
+        
+        total_calories = 0
+        total_protein = 0
+        total_carbs = 0
+        total_fat = 0
+        logged_foods = []
 
-    # MODIFIED: Filter activity log by user_id
-    activity_log = db.activity_logs.find_one({"user_id": current_user['_id'], "date": date_str})
-    calories_burned = activity_log['calories_burned'] if activity_log else 0
+        # Assuming your daily_logs documents contain macro info
+        for log in logs:
+            total_calories += log.get('total_calories', 0)
+            total_protein += log.get('total_macros', 0).get('protein', 0)
+            total_carbs += log.get('total_macros',0).get('carbs', 0)
+            total_fat += log.get('total_macros',0).get('fat', 0)
+            logged_foods.append(parse_json(log))
 
-    return jsonify({
-        "date": date_str,
-        "total_calories": round(total_calories, 2),
-        "calories_burned": round(calories_burned, 2),
-        "logged_foods": logged_foods
-    })
+        # --- 2. Fetch activity log for the day ---
+        activity_log = db.activity_logs.find_one({"user_id": current_user['_id'], "date": date_str})
+        calories_burned = activity_log.get('calories_burned', 0) if activity_log else 0
+
+        # --- 3. Fetch the full user profile for goals and weight ---
+        # We fetch the full document to get the most up-to-date info
+        user_profile_doc = db.users.find_one({"_id": current_user['_id']})
+        user_profile = parse_json(user_profile_doc) if user_profile_doc else {}
+
+        # --- 4. Construct and return the comprehensive response ---
+        return jsonify({
+            "date": date_str,
+            "total_calories": round(total_calories, 2),
+            "calories_burned": round(calories_burned, 2),
+            "logged_foods": logged_foods,
+            "macros_consumed": {
+                "protein": round(total_protein, 2),
+                "carbs": round(total_carbs, 2),
+                "fat": round(total_fat, 2)
+            },
+            "user_profile": {
+                "current_weight": user_profile.get("current_weight"),
+                "calorie_goal": user_profile.get("calorie_goal"),
+                "macro_goals": user_profile.get("macro_goals") # Can be None/null
+            }
+        })
+
+    except Exception as e:
+        return jsonify({"message": "An error occurred fetching summary", "error": str(e)}), 500
 @app.route('/api/progress/weight', methods=['GET'])
 @token_required # MODIFIED: Protect this route
 def get_weight_progress(current_user): # MODIFIED: Get the current user

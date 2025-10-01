@@ -1,9 +1,37 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
 import ProgressCalendar from "../components/ProgressCalendar";
 import { toast } from "react-toastify";
 import apiFetch from "../apiService"; // <-- STEP 1: Import your API helper
 import Loader from "../components/Loader"; // <-- Import the Loader component
+import MacroProgressBar from "../components/MacroProgressBar";
+
+// Helper function to calculate macro goals
+const calculateMacroGoals = (profile) => {
+  if (!profile) return { protein: 150, carbs: 200, fat: 65 }; // Fallback defaults
+
+  // Priority 1: Use user-defined goals if they exist
+  if (profile.macro_goals && profile.macro_goals.protein) {
+    return profile.macro_goals;
+  }
+
+  // Priority 2: Calculate goals based on weight and calorie goal
+  if (profile.current_weight && profile.calorie_goal) {
+    const weightKg = profile.current_weight;
+    const calorieGoal = profile.calorie_goal;
+
+    // Common calculation: 1.6g protein/kg, 1.0g fat/kg, rest from carbs
+    const proteinGoal = Math.round(weightKg * 1.6);
+    const fatGoal = Math.round(weightKg * 1.0);
+    const carbsCalories = calorieGoal - proteinGoal * 4 - fatGoal * 9;
+    const carbsGoal = Math.round(Math.max(0, carbsCalories / 4)); // Ensure carbs are not negative
+
+    return { protein: proteinGoal, carbs: carbsGoal, fat: fatGoal };
+  }
+
+  // Priority 3: Fallback defaults
+  return { protein: 100, carbs: 100, fat: 100 };
+};
 
 // STEP 2: Remove the apiUrl prop. It's no longer needed.
 const Dashboard = () => {
@@ -13,6 +41,7 @@ const Dashboard = () => {
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(false);
   const [caloriesBurnedInput, setCaloriesBurnedInput] = useState("");
+  // const [macros, setMacros] = useState({ consumed: null, goals: null }); // <-- New state for macros
 
   const fetchSummary = useCallback(async (date) => {
     try {
@@ -25,13 +54,24 @@ const Dashboard = () => {
       console.error("Error fetching summary:", err);
       toast.error(`Could not load dashboard data: ${err.message}`);
       // Set a default state on error to prevent crashing
-      setSummary({ total_calories: 0, calories_burned: 0, logged_foods: [] });
+      setSummary({
+        total_calories: 0,
+        calories_burned: 0,
+        logged_foods: [],
+        macros_consumed: null,
+        user_profile: null,
+      });
     }
   }, []); // The apiUrl dependency is gone
 
   useEffect(() => {
     fetchSummary(selectedDate);
   }, [selectedDate, fetchSummary]);
+
+  const macroGoals = useMemo(
+    () => calculateMacroGoals(summary?.user_profile),
+    [summary]
+  );
 
   const handleSaveCaloriesBurned = async () => {
     const calories = parseFloat(caloriesBurnedInput);
@@ -78,6 +118,7 @@ const Dashboard = () => {
 
   return (
     <div>
+      {console.log(summary)}
       {loading && <Loader />}
       {/* STEP 5: Remove the apiUrl prop from ProgressCalendar too */}
       <ProgressCalendar
@@ -107,6 +148,35 @@ const Dashboard = () => {
             <div className="label">Net Calories</div>
           </div>
         </div>
+      </div>
+
+      {/* --- NEW MACROS CARD --- */}
+      <div className="card">
+        <h3>Macros</h3>
+        {summary.macros_consumed && macroGoals ? (
+          <div className="macros-container">
+            <MacroProgressBar
+              label="Protein"
+              consumed={summary.macros_consumed.protein}
+              goal={macroGoals.protein}
+              colorClass="protein"
+            />
+            <MacroProgressBar
+              label="Carbs"
+              consumed={summary.macros_consumed.carbs}
+              goal={macroGoals.carbs}
+              colorClass="carbs"
+            />
+            <MacroProgressBar
+              label="Fat"
+              consumed={summary.macros_consumed.fat}
+              goal={macroGoals.fat}
+              colorClass="fat"
+            />
+          </div>
+        ) : (
+          <p>Log food to see your macro breakdown.</p>
+        )}
       </div>
 
       <div className="card">

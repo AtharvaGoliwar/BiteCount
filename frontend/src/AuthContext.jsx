@@ -41,9 +41,27 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const register = async (name, email, password) => {
+  const register = async (
+    name,
+    email,
+    password,
+    calorieGoal,
+    proteinGoal,
+    carbsGoal,
+    fatGoal,
+    weight
+  ) => {
     try {
-      await apiFetch("/register", "POST", { name, email, password });
+      await apiFetch("/register", "POST", {
+        name,
+        email,
+        password,
+        calorieGoal,
+        proteinGoal,
+        carbsGoal,
+        fatGoal,
+        weight,
+      });
       // After successful registration, log the user in automatically
       await login(email, password);
     } catch (error) {

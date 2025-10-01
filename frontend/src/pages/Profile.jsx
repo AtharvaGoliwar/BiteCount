@@ -11,9 +11,12 @@ const Profile = () => {
   const [formData, setFormData] = useState({
     name: "",
     height_cm: "",
-    weight_kg: "",
+    current_weight: "",
     target_weight_kg: "",
-    daily_calories_goal: "",
+    daily_calorie_goal: "",
+    proteinGoal: "",
+    carbsGoal: "",
+    fatGoal: "",
   });
   const [passwordData, setPasswordData] = useState({
     old_password: "",
@@ -21,14 +24,23 @@ const Profile = () => {
   });
   const [message, setMessage] = useState("");
 
+  // --- NEW: State for goal inputs ---
+  const [calorieGoal, setCalorieGoal] = useState("");
+  const [proteinGoal, setProteinGoal] = useState("");
+  const [carbsGoal, setCarbsGoal] = useState("");
+  const [fatGoal, setFatGoal] = useState("");
+
   useEffect(() => {
     if (user) {
       setFormData({
         name: user.name || "",
         height_cm: user.profile.height_cm || "",
-        weight_kg: user.profile.weight_kg || "",
+        current_weight: user.current_weight || "",
         target_weight_kg: user.profile.target_weight_kg || "",
-        daily_calories_goal: user.profile.daily_calories_goal || "",
+        daily_calorie_goal: user.profile.daily_calorie_goal || "",
+        proteinGoal: user.macro_goals?.protein || "",
+        carbsGoal: user.macro_goals?.carbs || "",
+        fatGoal: user.macro_goals?.fat || "",
       });
     }
   }, [user]);
@@ -51,9 +63,14 @@ const Profile = () => {
         name: formData.name,
         profile: {
           height_cm: Number(formData.height_cm),
-          weight_kg: Number(formData.weight_kg),
+          current_weight: Number(formData.current_weight),
           target_weight_kg: Number(formData.target_weight_kg),
-          daily_calories_goal: Number(formData.daily_calories_goal),
+          daily_calorie_goal: Number(formData.daily_calorie_goal),
+          macro_goals: {
+            protein: Number(formData.proteinGoal),
+            carbs: Number(formData.carbsGoal),
+            fat: Number(formData.fatGoal),
+          },
         },
       };
       setLoading(true);
@@ -120,8 +137,8 @@ const Profile = () => {
             <label>Weight (kg):</label>
             <input
               type="number"
-              name="weight_kg"
-              value={formData.weight_kg}
+              name="current_weight"
+              value={formData.current_weight}
               onChange={handleProfileChange}
             />
           </div>
@@ -138,10 +155,45 @@ const Profile = () => {
             <label>Daily Calories Goal:</label>
             <input
               type="number"
-              name="daily_calories_goal"
-              value={formData.daily_calories_goal}
+              name="daily_calorie_goal"
+              value={formData.daily_calorie_goal}
               onChange={handleProfileChange}
             />
+          </div>
+          <div className="macro-goals-group">
+            <div className="form-group">
+              <label htmlFor="proteinGoal">Protein (g)</label>
+              <input
+                type="number"
+                id="proteinGoal"
+                className="form-control"
+                placeholder="e.g., 150"
+                value={formData.proteinGoal}
+                onChange={handleProfileChange}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="carbsGoal">Carbs (g)</label>
+              <input
+                type="number"
+                id="carbsGoal"
+                className="form-control"
+                placeholder="e.g., 200"
+                value={formData.carbsGoal}
+                onChange={handleProfileChange}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="fatGoal">Fat (g)</label>
+              <input
+                type="number"
+                id="fatGoal"
+                className="form-control"
+                placeholder="e.g., 65"
+                value={formData.fatGoal}
+                onChange={handleProfileChange}
+              />
+            </div>
           </div>
           <button type="submit" className="auth-btn">
             Update Profile

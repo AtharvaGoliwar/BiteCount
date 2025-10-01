@@ -120,3 +120,14 @@
     background-color: #d4edda;
     color: #155724;
 }
+
+.macro-goals-group {
+  display: flex;
+  flex-wrap: wrap; /* Allows wrapping on small screens */
+  gap: var(--spacing-md);
+}
+
+.macro-goals-group .form-group {
+  flex: 1; /* Each input group will take up equal space */
+  min-width: 80px; /* Prevents them from getting too squished */
+}
