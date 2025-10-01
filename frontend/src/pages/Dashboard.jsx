@@ -71,7 +71,7 @@ const Dashboard = () => {
 
   // Handle the case where the summary couldn't be fetched
   if (!summary) {
-    return <p>Could not load data. Is the backend server running?</p>;
+    return <Loader />;
   }
 
   const netCalories = summary.total_calories - summary.calories_burned;
