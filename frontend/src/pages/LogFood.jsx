@@ -1,36 +1,37 @@
 // import React, { useState, useEffect } from "react";
 // import { Link, useNavigate } from "react-router-dom";
-// import LogModal from "../components/LogModal"; // Import the modal component
-// import "../components/Modal.css"; // Import modal styles
-// import { toast } from "react-toastify"; // Import toast
+// import LogModal from "../components/LogModal";
+// import "../components/Modal.css";
+// import { toast } from "react-toastify";
+// import apiFetch from "../apiService"; // <-- STEP 1: Import the API helper
+// import Loader from "../components/Loader";
 
-// const LogFood = ({ apiUrl }) => {
-//   // ... (useState for query, allFoods, loading, etc. remain the same)
+// // STEP 2: Remove the apiUrl prop
+// const LogFood = () => {
 //   const [query, setQuery] = useState("");
 //   const [allFoods, setAllFoods] = useState([]);
 //   const [filteredResults, setFilteredResults] = useState([]);
-//   const [loading, setLoading] = useState(true);
+//   const [loading, setLoading] = useState(false);
 //   const navigate = useNavigate();
 
-//   // State to manage the modal
 //   const [isModalOpen, setIsModalOpen] = useState(false);
 //   const [selectedFood, setSelectedFood] = useState(null);
+//   // const [loading,setLoading] = useState(false);
 
-//   // Fetching logic remains the same
 //   useEffect(() => {
 //     const fetchAllFoods = async () => {
 //       try {
-//         const response = await fetch(`${apiUrl}/foods?q=`);
-//         const data = await response.json();
+//         // setLoading(true);
+//         // STEP 3: Use apiFetch with the correct "/api" endpoint
+//         const data = await apiFetch("/foods?q=");
 //         setAllFoods(data);
 //       } catch (error) {
 //         console.error("Failed to fetch food list:", error);
-//       } finally {
-//         setLoading(false);
+//         toast.error("Could not load your food database.");
 //       }
 //     };
 //     fetchAllFoods();
-//   }, [apiUrl]);
+//   }, []); // STEP 4: Remove apiUrl from the dependency array
 
 //   // Filtering logic remains the same
 //   useEffect(() => {
@@ -44,53 +45,53 @@
 //     setFilteredResults(results);
 //   }, [query, allFoods]);
 
-//   // --- NEW MODAL HANDLING LOGIC ---
-
-//   // Function to open the modal with the selected food
 //   const handleOpenModal = (food) => {
 //     setSelectedFood(food);
 //     setIsModalOpen(true);
 //   };
 
-//   // Function to close the modal
 //   const handleCloseModal = () => {
 //     setIsModalOpen(false);
 //     setSelectedFood(null);
 //   };
 
-//   // This function is passed to the modal and is called when the user confirms
 //   const handleLogFood = async (food, servings) => {
 //     if (!food || !servings || servings <= 0) return;
 
-//     const promise = fetch(`${apiUrl}/log/food`, {
-//       method: "POST",
-//       headers: { "Content-Type": "application/json" },
-//       body: JSON.stringify({ food_id: food._id.$oid, servings: servings }),
-//     });
-
-//     // Use toast.promise for a great UX (pending -> success/error)
-//     toast
-//       .promise(promise, {
-//         pending: "Logging your food...",
-//         success: `${food.name} logged successfully! 👌`,
-//         error: "Could not log food. Please try again. 🤯",
-//       })
-//       .then((response) => {
-//         if (response.ok) {
-//           handleCloseModal();
-//           navigate("/");
+//     try {
+//       // STEP 5: Use apiFetch within toast.promise for a better UX
+//       setLoading(true);
+//       await toast.promise(
+//         apiFetch("/log/food", "POST", {
+//           food_id: food._id.$oid,
+//           servings: servings,
+//         }),
+//         {
+//           pending: "Logging your food...",
+//           success: `${food.name} logged successfully! 👌`,
+//           error: "Could not log food. Please try again. 🤯",
 //         }
-//       })
-//       .catch((err) => console.error("Logging error:", err));
+//       );
+//       // If the promise above succeeds, this code will run
+//       handleCloseModal();
+//       navigate("/dashboard");
+//     } catch (err) {
+//       // The toast.promise automatically shows the error toast.
+//       // We can just log the error here for debugging.
+//       console.error("Logging error:", err);
+//     } finally {
+//       setLoading(false);
+//     }
 //   };
 
 //   if (loading) {
 //     return <p style={{ textAlign: "center" }}>Loading food database...</p>;
 //   }
 
+//   // The JSX part of the component remains the same
 //   return (
 //     <div>
-//       {/* The Modal is rendered conditionally at the top level */}
+//       {loading && <Loader />}
 //       {isModalOpen && selectedFood && (
 //         <LogModal
 //           food={selectedFood}
@@ -128,7 +129,6 @@
 //                       {food.calories} kcal per {food.serving_size}
 //                     </small>
 //                   </div>
-//                   {/* This button now opens the modal instead of calling the API directly */}
 //                   <button
 //                     onClick={() => handleOpenModal(food)}
 //                     className="btn"
@@ -157,14 +157,14 @@
 // export default LogFood;
 
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+// STEP 2.1: Import useLocation along with the other hooks
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import LogModal from "../components/LogModal";
 import "../components/Modal.css";
 import { toast } from "react-toastify";
-import apiFetch from "../apiService"; // <-- STEP 1: Import the API helper
+import apiFetch from "../apiService";
 import Loader from "../components/Loader";
 
-// STEP 2: Remove the apiUrl prop
 const LogFood = () => {
   const [query, setQuery] = useState("");
   const [allFoods, setAllFoods] = useState([]);
@@ -174,13 +174,17 @@ const LogFood = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFood, setSelectedFood] = useState(null);
-  // const [loading,setLoading] = useState(false);
+
+  // STEP 2.2: Use the useLocation hook to get the state passed from the Dashboard
+  const location = useLocation();
+  // Get the date from the state, or default to today's date if not provided.
+  // This makes the component robust, working even if navigated to directly.
+  const logDate =
+    location.state?.date || new Date().toISOString().split("T")[0];
 
   useEffect(() => {
     const fetchAllFoods = async () => {
       try {
-        // setLoading(true);
-        // STEP 3: Use apiFetch with the correct "/api" endpoint
         const data = await apiFetch("/foods?q=");
         setAllFoods(data);
       } catch (error) {
@@ -189,9 +193,8 @@ const LogFood = () => {
       }
     };
     fetchAllFoods();
-  }, []); // STEP 4: Remove apiUrl from the dependency array
+  }, []);
 
-  // Filtering logic remains the same
   useEffect(() => {
     if (query.trim() === "") {
       setFilteredResults([]);
@@ -217,12 +220,13 @@ const LogFood = () => {
     if (!food || !servings || servings <= 0) return;
 
     try {
-      // STEP 5: Use apiFetch within toast.promise for a better UX
       setLoading(true);
       await toast.promise(
+        // STEP 2.3: Add the 'logDate' to the body of the API request
         apiFetch("/log/food", "POST", {
           food_id: food._id.$oid,
           servings: servings,
+          date: logDate, // <-- The date from the dashboard is now included
         }),
         {
           pending: "Logging your food...",
@@ -230,23 +234,20 @@ const LogFood = () => {
           error: "Could not log food. Please try again. 🤯",
         }
       );
-      // If the promise above succeeds, this code will run
       handleCloseModal();
       navigate("/dashboard");
     } catch (err) {
-      // The toast.promise automatically shows the error toast.
-      // We can just log the error here for debugging.
       console.error("Logging error:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  if (loading) {
+  if (loading && !isModalOpen) {
+    // Only show full page loader if modal isn't open
     return <p style={{ textAlign: "center" }}>Loading food database...</p>;
   }
 
-  // The JSX part of the component remains the same
   return (
     <div>
       {loading && <Loader />}
@@ -258,7 +259,8 @@ const LogFood = () => {
         />
       )}
 
-      <h1 className="page-title">Log Food</h1>
+      {/* You can optionally display the date you're logging for */}
+      <h1 className="page-title">Log Food for {logDate}</h1>
       <div className="card">
         <div className="form-group">
           <label htmlFor="search">Search your food database</label>

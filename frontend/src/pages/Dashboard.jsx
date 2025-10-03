@@ -216,7 +216,12 @@ const Dashboard = () => {
         ) : (
           <p>No food logged for this day.</p>
         )}
-        <Link to="/log-food" className="btn" style={{ marginTop: "20px" }}>
+        <Link
+          to="/log-food"
+          state={{ date: selectedDate }} // <-- ADD THIS LINE
+          className="btn"
+          style={{ marginTop: "20px" }}
+        >
           Log More Food
         </Link>
       </div>
