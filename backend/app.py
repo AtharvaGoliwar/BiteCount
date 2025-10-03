@@ -249,6 +249,46 @@ def log_food_entry(current_user): # MODIFIED: Get the current user
     db.daily_logs.insert_one(log_entry)
     return jsonify({"message": "Food logged successfully"}), 201
 
+@app.route('/api/log/food/<log_id>', methods=['DELETE'])
+@token_required
+def delete_food_log(current_user, log_id):
+    """
+    Deletes a specific food log entry identified by its log_id.
+    Ensures that the log belongs to the currently authenticated user
+    before deleting.
+    """
+    try:
+        # Step 1: Validate that the provided log_id is a valid MongoDB ObjectId format.
+        # This prevents errors if a malformed ID is sent.
+        try:
+            object_id_to_delete = ObjectId(log_id)
+        except Exception:
+            return jsonify({"error": "Invalid log ID format"}), 400
+
+        # Step 2: Perform the delete operation with a secure query.
+        # The query must match BOTH the log's _id AND the current_user's _id.
+        # This is the critical security step that prevents a user from deleting
+        # another user's data.
+        delete_result = db.daily_logs.delete_one({
+            "_id": object_id_to_delete,
+            "user_id": current_user['_id']
+        })
+
+        # Step 3: Check if a document was actually deleted.
+        if delete_result.deleted_count == 1:
+            # Success! The document was found and deleted.
+            return jsonify({"message": "Food log deleted successfully"}), 200
+        else:
+            # If deleted_count is 0, it means no document matched the query.
+            # This happens if the log_id doesn't exist OR it belongs to another user.
+            # In both cases, we return a 404 to not reveal information.
+            return jsonify({"error": "Log not found or you do not have permission"}), 404
+
+    except Exception as e:
+        # Catch any other unexpected server errors.
+        print(f"Error in delete_food_log: {e}") # Log for debugging
+        return jsonify({"error": "An internal server error occurred"}), 500
+
 @app.route('/api/log/weight', methods=['POST'])
 @token_required # MODIFIED: Protect this route
 def log_weight_entry(current_user): # MODIFIED: Get the current user
