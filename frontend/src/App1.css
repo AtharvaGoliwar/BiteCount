@@ -183,3 +183,40 @@ body {
     color: var(--danger-color);
     border-color: #fcc;
 }
+
+/* === Modern & Clean Delete Button === */
+.btn-delete {
+  /* Shape & Size */
+  width: 28px;
+  height: 28px;
+  border-radius: 50%; /* Makes it a circle */
+  
+  /* Color */
+  background-color: #fee2e2; /* A light, soft red */
+  color: #ef4444; /* A sharp, darker red for the 'X' */
+  
+  /* 'X' Icon Styling */
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 26px; /* Helps vertically center the 'X' */
+  text-align: center;
+
+  /* General Button Resets */
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  
+  /* Smooth Transitions */
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-delete:hover {
+  background-color: #ef4444; /* Solid red on hover */
+  color: #ffffff; /* White 'X' on hover */
+  transform: scale(1.1); /* Slightly enlarges the button on hover */
+}
+
+/* Optional: feedback when the button is actively being clicked */
+.btn-delete:active {
+  transform: scale(0.95);
+}

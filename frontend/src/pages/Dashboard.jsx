@@ -104,6 +104,32 @@ const Dashboard = () => {
     }
   };
 
+  const handleDeleteLog = async (logId) => {
+    // 1. Asks for user confirmation
+    if (!window.confirm("Are you sure you want to delete this food log?")) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await toast.promise(
+        // 2. This is the crucial API call
+        apiFetch(`/log/food/${logId}`, "DELETE"),
+        {
+          pending: "Deleting log...",
+          success: "Food log deleted successfully!",
+          error: "Failed to delete log.",
+        }
+      );
+      // 3. Refreshes the dashboard data on success
+      fetchSummary(selectedDate);
+    } catch (err) {
+      console.error("Failed to delete food log:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // A better loading state check
   // if (loading) {
   //   return <p>Loading dashboard...</p>;
@@ -207,9 +233,20 @@ const Dashboard = () => {
             {summary.logged_foods.map((log) => (
               <li key={log._id.$oid} className="list-group-item">
                 <span>
-                  {log.name} ({log.servings} serving)
+                  <span>
+                    {log.name} ({log.servings} serving)
+                  </span>
+                  <span> {}</span>
+                  <span>{Math.round(log.total_calories)} kcal</span>
                 </span>
-                <span>{Math.round(log.total_calories)} kcal</span>
+                <span>
+                  <button
+                    className="btn-delete"
+                    onClick={() => handleDeleteLog(log._id.$oid)}
+                  >
+                    ❌
+                  </button>
+                </span>
               </li>
             ))}
           </ul>
