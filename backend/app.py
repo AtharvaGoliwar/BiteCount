@@ -369,7 +369,7 @@ def get_daily_summary(current_user, date_str):
             },
             "user_profile": {
                 "current_weight": user_profile.get("current_weight"),
-                "calorie_goal": user_profile.get("calorie_goal"),
+                "calorie_goal": user_profile.get("profile").get("daily_calorie_goal"),
                 "macro_goals": user_profile.get("macro_goals") # Can be None/null
             }
         })
