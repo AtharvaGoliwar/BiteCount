@@ -220,3 +220,34 @@ body {
 .btn-delete:active {
   transform: scale(0.95);
 }
+
+/* Add this to your main CSS file (e.g., App.css) */
+
+.confirmation-buttons {
+  display: flex;
+  justify-content: flex-end; /* Aligns buttons to the right */
+  gap: 10px; /* Space between buttons */
+  margin-top: 15px;
+}
+
+.confirmation-buttons .btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.confirmation-buttons .btn-confirm {
+  background-color: #dc3545; /* Red for confirmation */
+  color: white;
+}
+
+.confirmation-buttons .btn-cancel {
+  background-color: #6c757d; /* Gray for cancel */
+  color: white;
+}
+
+.confirmation-buttons .btn:hover {
+  opacity: 0.9;
+}

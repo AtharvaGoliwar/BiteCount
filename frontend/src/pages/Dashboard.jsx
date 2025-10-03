@@ -6,6 +6,26 @@ import apiFetch from "../apiService"; // <-- STEP 1: Import your API helper
 import Loader from "../components/Loader"; // <-- Import the Loader component
 import MacroProgressBar from "../components/MacroProgressBar";
 
+const ConfirmToast = ({ closeToast, onConfirm, message }) => (
+  <div>
+    <p>{message}</p>
+    <div className="confirmation-buttons">
+      <button
+        className="btn btn-confirm"
+        onClick={() => {
+          onConfirm();
+          closeToast();
+        }}
+      >
+        Yes, Delete
+      </button>
+      <button className="btn btn-cancel" onClick={closeToast}>
+        Cancel
+      </button>
+    </div>
+  </div>
+);
+
 // Helper function to calculate macro goals
 const calculateMacroGoals = (profile) => {
   if (!profile) return { protein: 150, carbs: 200, fat: 65 }; // Fallback defaults
@@ -104,30 +124,38 @@ const Dashboard = () => {
     }
   };
 
-  const handleDeleteLog = async (logId) => {
-    // 1. Asks for user confirmation
-    if (!window.confirm("Are you sure you want to delete this food log?")) {
-      return;
-    }
-
-    setLoading(true);
-    try {
-      await toast.promise(
-        // 2. This is the crucial API call
-        apiFetch(`/log/food/${logId}`, "DELETE"),
-        {
+  // --- UPDATED handleDeleteLog function ---
+  const handleDeleteLog = (logId) => {
+    const performDelete = async () => {
+      setLoading(true);
+      try {
+        await toast.promise(apiFetch(`/log/food/${logId}`, "DELETE"), {
           pending: "Deleting log...",
           success: "Food log deleted successfully!",
           error: "Failed to delete log.",
-        }
-      );
-      // 3. Refreshes the dashboard data on success
-      fetchSummary(selectedDate);
-    } catch (err) {
-      console.error("Failed to delete food log:", err);
-    } finally {
-      setLoading(false);
-    }
+        });
+        // Refresh the summary data after successful deletion
+        await fetchSummary(selectedDate);
+      } catch (err) {
+        console.error("Failed to delete food log:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Replace window.confirm with a custom toast notification
+    toast.info(
+      <ConfirmToast
+        message="Are you sure you want to delete this food log?"
+        onConfirm={performDelete}
+      />,
+      {
+        autoClose: false, // Don't close automatically
+        closeOnClick: false, // Don't close on click
+        draggable: false, // Don't allow dragging
+        position: "top-center",
+      }
+    );
   };
 
   // A better loading state check
