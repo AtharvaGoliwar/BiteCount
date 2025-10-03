@@ -198,7 +198,7 @@ def change_password(current_user):
 def search_foods():
     query = request.args.get('q', '')
     # Case-insensitive search
-    foods = db.foods.find({"name": {"$regex": query, "$options": 'i'}}).limit(20)
+    foods = db.foods.find({"name": {"$regex": query, "$options": 'i'}})
     return parse_json(list(foods))
 
 @app.route('/api/foods', methods=['POST'])
@@ -208,6 +208,7 @@ def add_food():
         "name": data['name'],
         "type": data.get('type', 'General'),
         "serving_size": data['serving_size'],
+        "weight": data['weight'],
         "calories": float(data['calories']),
         "macros": {
             "protein": float(data['macros'].get('protein', 0)),
